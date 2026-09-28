@@ -1,0 +1,1839 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>急診移工足部外傷：隱私懷孕與假影防範演練平台 (XR PRIV 01)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts Inter & Noto Sans TC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#075985',
+              800: '#0c4a6e',
+              900: '#082f49',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', 'Noto Sans TC', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      .print-only {
+        display: block !important;
+      }
+      body {
+        background: white !important;
+        color: black !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
+
+  <!-- Top Navigation & Sticky Simulation Bar -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between py-2.5 gap-3">
+        <!-- Brand & Scenario Title -->
+        <div class="flex items-center gap-3">
+          <div class="bg-brand-600 text-white p-2.5 rounded-xl shadow-sm flex items-center justify-center font-bold text-lg">
+            XR
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-semibold px-2 py-0.5 rounded bg-sky-100 text-sky-800">XR PRIV 01</span>
+              <span class="text-xs font-medium px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">臨床技能演練</span>
+              <span class="text-xs text-slate-600 font-medium bg-slate-100 px-2 py-0.5 rounded border border-slate-200">標準配置: 放射師 2 名 (A: 主導溝通與通報 / B: 擺位照護與影像)</span>
+            </div>
+            <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">
+              急診移工足部外傷：隱私懷孕資訊揭露與金屬假影防範
+            </h1>
+          </div>
+        </div>
+
+        <!-- Simulation Control Bar -->
+        <div class="flex flex-wrap items-center gap-2 sm:gap-4 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl">
+          <!-- Mode Switch -->
+          <div class="flex items-center bg-slate-200 rounded-lg p-0.5 text-xs font-medium">
+            <button id="mode10Btn" class="px-2.5 py-1 rounded-md bg-white text-brand-700 shadow-sm transition-all" onclick="setTimerMode(10)">
+              10分鐘練習
+            </button>
+            <button id="mode15Btn" class="px-2.5 py-1 rounded-md text-slate-600 hover:text-slate-900 transition-all" onclick="setTimerMode(15)">
+              15分鐘競賽
+            </button>
+          </div>
+
+          <!-- Digital Clock Display -->
+          <div class="flex items-center gap-1.5 font-mono text-xl sm:text-2xl font-bold px-2 py-0.5 rounded-lg bg-slate-900 text-emerald-400 min-w-[105px] justify-center tracking-wider shadow-inner" id="timerDisplay">
+            10:00
+          </div>
+
+          <!-- Timer Buttons -->
+          <div class="flex items-center gap-1">
+            <button id="startTimerBtn" onclick="toggleTimer()" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium flex items-center gap-1 transition-colors shadow-sm">
+              <svg id="playIcon" class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              <span id="startTimerText">開始</span>
+            </button>
+            <button onclick="resetTimer()" class="px-2.5 py-1 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-xs font-medium transition-colors" title="重置計時">
+              重設
+            </button>
+            <button onclick="triggerEmergencyHalt()" class="px-2.5 py-1 bg-rose-100 hover:bg-rose-200 text-rose-700 border border-rose-300 rounded-lg text-xs font-semibold transition-colors" title="演練緊急停止">
+              停止演練
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs (Evaluation checklist strictly at the very end) -->
+      <div class="flex space-x-1 sm:space-x-4 border-t border-slate-100 pt-1 -mb-px overflow-x-auto text-sm font-medium">
+        <button onclick="switchTab('scenario')" id="tab-scenario" class="tab-btn py-2 px-3 border-b-2 border-brand-600 text-brand-600 font-semibold flex items-center gap-1.5 whitespace-nowrap">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          情境劇本 (時間軸演練)
+        </button>
+        <button onclick="switchTab('communication')" id="tab-communication" class="tab-btn py-2 px-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-1.5 whitespace-nowrap">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+          ISBAR與隱私溝通指引
+        </button>
+        <button onclick="switchTab('cards')" id="tab-cards" class="tab-btn py-2 px-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-1.5 whitespace-nowrap">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+          模擬工具與回饋卡片
+        </button>
+        <button onclick="switchTab('debriefing')" id="tab-debriefing" class="tab-btn py-2 px-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-1.5 whitespace-nowrap">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+          復盤 PEARLS 與匯出
+        </button>
+        <button onclick="switchTab('evaluation')" id="tab-evaluation" class="tab-btn py-2 px-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-1.5 whitespace-nowrap">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          統一評核檢核表
+          <span id="scoreBadgeNav" class="ml-1 px-1.5 py-0.5 rounded-full text-xs bg-sky-100 text-sky-800 font-bold">0分</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+    <!-- ========================================================================= -->
+    <!-- TAB 1: 情境劇本 (時間軸互動演練 SCENARIO TIMELINE)                         -->
+    <!-- ========================================================================= -->
+    <div id="view-scenario" class="tab-content space-y-6">
+
+      <!-- Director & Team Roles Header -->
+      <div class="bg-gradient-to-r from-slate-900 via-brand-900 to-slate-900 text-white p-5 rounded-2xl shadow-md">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-semibold px-2 py-0.5 rounded bg-brand-500 text-white">Scenario Timeline</span>
+              <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">配置：放射師 A (主導溝通/通報) + 放射師 B (照護擺位/影像)</span>
+            </div>
+            <h2 class="text-lg font-bold mt-1">急診移工足部外傷：循序演練時間軸</h2>
+            <p class="text-xs text-slate-300">依五大時間階段推進，內建標準擬真對話腳本與突發情境觸發按鈕。</p>
+          </div>
+          <div class="flex flex-wrap gap-2 text-xs">
+            <button onclick="openVitalsModal()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg flex items-center gap-1.5 transition-colors">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span> 檢視生命徵象卡
+            </button>
+            <button onclick="openQCardModal()" class="px-3 py-2 bg-brand-700 hover:bg-brand-600 rounded-lg font-medium shadow-sm transition-colors flex items-center gap-1.5">
+              📷 檢視影像品質回饋卡
+            </button>
+            <button onclick="triggerChallengeModal()" class="px-3 py-2 bg-amber-600 hover:bg-amber-500 rounded-lg font-medium shadow-sm transition-colors flex items-center gap-1.5">
+              ⚡ 觸發團隊安全異議事件
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pre-Sim Briefing Card -->
+      <div class="bg-sky-50 border border-sky-200 rounded-2xl p-4 text-xs text-sky-950 space-y-2">
+        <div class="font-bold flex items-center gap-2 text-sky-950 text-sm">
+          <svg class="w-4 h-4 text-brand-600" fill="currentColor" viewBox="0 0 20 20"><path d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/></svg>
+          演前開場宣讀標準指導詞 (考官向兩位學員宣讀)
+        </div>
+        <p class="leading-relaxed bg-white/80 p-3 rounded-xl border border-sky-200 italic font-medium">
+          「你們在急診 X 光室值班。Siti 女士（22 歲印尼籍未婚移工，SIM0001），因工傷右足疼痛，由仲介推輪椅前來，醫師已開立右足非負重 X 光。請完成接待、檢查評估、模擬攝影與安全交接。現場有電話與通譯支援，所有聯繫均由導演模擬。可直接看到的表現由演員呈現；生命徵象與檢查結果需在你們提出評估後提供。真實接觸前須取得同意，疼痛檢查採口述模擬。無實體系統時請說出記錄內容。遇任何真實不適，任何人皆可喊『停止演練』。」
+        </p>
+      </div>
+
+      <!-- Vertical Chronological Timeline Container -->
+      <div class="relative pl-6 sm:pl-10 space-y-8 before:absolute before:left-3 sm:before:left-5 before:top-3 before:bottom-3 before:w-0.5 before:bg-slate-300">
+
+        <!-- TIMELINE STAGE 1 -->
+        <div id="stage-1" class="relative group">
+          <div class="absolute -left-6 sm:-left-10 top-1 w-6 sm:w-8 h-6 sm:h-8 rounded-full bg-brand-600 text-white font-bold flex items-center justify-center text-xs shadow-md border-2 border-white">
+            1
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold px-2 py-0.5 bg-sky-100 text-sky-800 rounded">階段一</span>
+                  <h3 class="text-base font-bold text-slate-900">接待核對、語言需求辨認與私密環境建立</h3>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">時間參考：10分鐘版 (00:00–02:00) ｜ 15分鐘競賽 (00:00–03:00)</p>
+              </div>
+              <div class="flex items-center gap-1.5 text-xs">
+                <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded font-mono">對應核心查核：C01 ~ C03</span>
+              </div>
+            </div>
+
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs text-slate-600 leading-relaxed">
+              <strong>情境線索：</strong>仲介推輪椅將 Siti 送入。Siti 眉頭深鎖、不敢踩地，下意識保護右足。檢查單註記「Pregnancy: No (陪同者代答)」。仲介搶著遞單說話。
+            </div>
+
+            <!-- Dialogue Script -->
+            <div class="space-y-2.5 text-xs">
+              <span class="font-bold text-slate-800 block">💬 現場擬真對話與互動腳本：</span>
+              
+              <!-- Dialogue: Agent -->
+              <div class="bg-amber-50/70 border border-amber-200 p-3 rounded-xl space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-amber-900 flex items-center gap-1">🧑‍💼 仲介 (導演扮演，強勢搶答)：</span>
+                  <span class="text-[11px] text-amber-700 font-mono">情境觸發</span>
+                </div>
+                <p class="text-slate-800 italic">
+                  「放射師！她只是工廠扭到腳啦，沒懷孕、沒懷孕！單子我都寫好了，你們快點照一照，我們還要趕回工廠！」
+                </p>
+              </div>
+
+              <!-- Dialogue: Radiographer A -->
+              <div class="bg-sky-50/70 border border-sky-200 p-3 rounded-xl space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-sky-900 flex items-center gap-1">👤 放射師 A (落實雙重身分核對與辨認語言障礙)：</span>
+                  <span class="text-[11px] text-sky-700 font-mono">身分核對</span>
+                </div>
+                <p class="text-slate-800">
+                  「仲介先生您好，為了病人安全，醫療常規必須親自與病人核對手圈。（轉向病人）Siti 小姐您好，請問您的中文名字或護照拼音是什麼？出生年月日是哪一天？（核對手圈 SIM0001 / 2004-04-18 / 右足部位無誤）。」
+                </p>
+              </div>
+
+              <!-- Dialogue: Patient Siti -->
+              <div class="bg-slate-100 border border-slate-200 p-2.5 rounded-xl space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-slate-800 flex items-center gap-1">🧕 病人 Siti (緊張焦慮、低頭看仲介)：</span>
+                  <span class="text-[11px] text-slate-500 font-mono">語言受限表現</span>
+                </div>
+                <p class="text-slate-700 italic">
+                  （眼神畏懼看向仲介，不敢直視放射師，手指緊抓褲管，只用簡短中文小聲說）「……腳痛……怕。」
+                </p>
+              </div>
+
+              <!-- Dialogue: Radiographer A to Agent -->
+              <div class="bg-sky-50/70 border border-sky-200 p-3 rounded-xl space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-sky-900 flex items-center gap-1">👤 放射師 A (啟動通譯並建立私密空間)：</span>
+                  <span class="text-[11px] text-sky-700 font-mono">隱私界線</span>
+                </div>
+                <p class="text-slate-800">
+                  「我們發現 Siti 小姐主要使用印尼語，我們現在啟用電話通譯支援。另外，依放射線檢查規範與病人更衣隱私，請仲介先生先至外面等候區稍坐，檢查完畢我們會立刻請您陪同回診間。（關上檢查室防護門，確保談話不被外人聽見）」
+                </p>
+              </div>
+
+              <!-- Dialogue: Radiographer B -->
+              <div class="bg-indigo-50/70 border border-indigo-200 p-3 rounded-xl space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-indigo-900 flex items-center gap-1">🛠️ 放射師 B (環境安全與煞車固定)：</span>
+                  <span class="text-[11px] text-indigo-700 font-mono">輪椅防護</span>
+                </div>
+                <p class="text-slate-800">
+                  「門已確實關閉，外面聽不到聲音。輪椅兩側雙煞車已踩下固定，通譯電話已就緒！」
+                </p>
+              </div>
+            </div>
+
+            <!-- Director Checkpoint -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 text-xs text-slate-500">
+              <div>
+                <strong class="text-brand-700">🎬 考官觀察點：</strong>
+                是否由病人本人/手圈完成雙重核對？是否辨識出印尼語需求？是否禮貌請離仲介並關門確保不被聽見？
+              </div>
+              <button onclick="stampCurrentTime('C01')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-[11px] font-mono">
+                ⏱️ 戳記階段一時間
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TIMELINE STAGE 2 -->
+        <div id="stage-2" class="relative group">
+          <div class="absolute -left-6 sm:-left-10 top-1 w-6 sm:w-8 h-6 sm:h-8 rounded-full bg-brand-600 text-white font-bold flex items-center justify-center text-xs shadow-md border-2 border-white">
+            2
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold px-2 py-0.5 bg-sky-100 text-sky-800 rounded">階段二 ★ 隱私關鍵</span>
+                  <h3 class="text-base font-bold text-slate-900">私密詢問懷孕、消除遣返恐懼與正當性/劑量溝通</h3>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">時間參考：10分鐘版 (02:00–04:00) ｜ 15分鐘競賽 (03:00–06:00)</p>
+              </div>
+              <div class="flex items-center gap-1.5 text-xs">
+                <span class="px-2 py-0.5 bg-rose-50 text-rose-700 font-bold rounded font-mono border border-rose-200">核心查核：C04 ~ C07</span>
+              </div>
+            </div>
+
+            <!-- Dialogue Script -->
+            <div class="space-y-2.5 text-xs">
+              <span class="font-bold text-slate-800 block">💬 現場擬真對話與互動腳本：</span>
+
+              <!-- Dialogue: Radiographer A with Interpreter -->
+              <div class="bg-sky-50/70 border border-sky-200 p-3 rounded-xl space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-sky-900 flex items-center gap-1">👤 放射師 A (透過通譯直接、中性詢問)：</span>
+                  <span class="text-[11px] text-sky-700 font-mono">生理期詢問</span>
+                </div>
+                <p class="text-slate-800">
+                  「Siti 小姐，現在門已經關好了，這裡只有我和另一位放射師，外面完全聽不到。為了照射安全，我想請問您：最後一次月經大約是什麼時候？最近是否有驗孕或可能懷孕呢？」
+                </p>
+              </div>
+
+              <!-- Dialogue: Patient Siti revelation -->
+              <div class="bg-amber-50 border border-amber-300 p-3.5 rounded-xl space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-amber-900 flex items-center gap-1">🧕 病人 Siti (經通譯如實吐露，含淚求助)：</span>
+                  <span class="text-[11px] text-amber-700 font-mono">敏感資訊揭露</span>
+                </div>
+                <p class="text-slate-900 italic font-medium leading-relaxed">
+                  「（眼眶泛紅，緊握雙手）……我月經大約 8 週沒有來了，上個禮拜我自己買驗孕棒驗是兩條線（陽性）。拜託你們千萬不要告訴仲介！我很怕他知道我懷孕會逼我回印尼……照這個 X 光會不會害死寶寶？」
+                </p>
+              </div>
+
+              <!-- Dialogue: Radiographer A reassurance & boundary -->
+              <div class="bg-sky-50/70 border border-sky-200 p-3.5 rounded-xl space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-sky-900 flex items-center gap-1">👤 放射師 A (保密承諾、同理、正當性與低劑量衛教)：</span>
+                  <span class="text-[11px] text-sky-700 font-mono">專業溝通</span>
+                </div>
+                <p class="text-slate-800 leading-relaxed">
+                  「Siti 小姐請不要害怕，依據台灣醫療法規，<strong>我們絕對不會擅自向仲介透露您的懷孕狀況</strong>。台灣法律也保障懷孕移工不能被任意解僱遣返。<br>
+                  關於照射安全：這次照的是右腳，主射束集中在腳部，子宮完全不在照射範圍內，散色到腹部的輻射劑量極低極低，對胎兒是安全的。但因為您自述驗孕陽性，我們<strong>先暫停曝光決策</strong>，我會先致電急診醫師確認檢查急迫性，並為您安排後續急診團隊的懷孕追蹤。」
+                </p>
+              </div>
+
+              <!-- Dialogue: Patient Siti Teach-Back -->
+              <div class="bg-slate-50 border border-slate-200 p-2.5 rounded-xl space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-slate-800 flex items-center gap-1">🧕 病人 Siti (落實 Teach-back 回述理解)：</span>
+                  <span class="text-[11px] text-slate-500 font-mono">病人回述</span>
+                </div>
+                <p class="text-slate-700 italic">
+                  「照的是右腳，肚子不在照射範圍，對寶寶風險很低。你們會先跟醫師確認，不會跟仲介說。我同意照腳。」
+                </p>
+              </div>
+            </div>
+
+            <!-- Director Note & Checkpoint -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 text-xs">
+              <div class="text-rose-700 font-medium">
+                ⛔ <strong>紅線指標提醒：</strong>絕不可在未經授權下向仲介告知懷孕，亦不可直接取消必要的足部骨折檢查！
+              </div>
+              <button onclick="stampCurrentTime('C05')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-[11px] font-mono">
+                ⏱️ 戳記階段二時間
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TIMELINE STAGE 3 -->
+        <div id="stage-3" class="relative group">
+          <div class="absolute -left-6 sm:-left-10 top-1 w-6 sm:w-8 h-6 sm:h-8 rounded-full bg-brand-600 text-white font-bold flex items-center justify-center text-xs shadow-md border-2 border-white">
+            3
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold px-2 py-0.5 bg-sky-100 text-sky-800 rounded">階段三</span>
+                  <h3 class="text-base font-bold text-slate-900">患肢保護、疼痛評估、脫襪視診與金屬磁力貼安全移除</h3>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">時間參考：10分鐘版 (04:00–05:30) ｜ 15分鐘競賽 (06:00–08:30)</p>
+              </div>
+              <div class="flex items-center gap-1.5 text-xs">
+                <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded font-mono">對應核心查核：C08 ~ C10</span>
+              </div>
+            </div>
+
+            <!-- Dialogue Script -->
+            <div class="space-y-2.5 text-xs">
+              <span class="font-bold text-slate-800 block">💬 現場擬真對話與互動腳本：</span>
+
+              <!-- Dialogue: Radiographer B Pain Assessment -->
+              <div class="bg-indigo-50/70 border border-indigo-200 p-3 rounded-xl space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-indigo-900 flex items-center gap-1">🛠️ 放射師 B (洗手、疼痛評估與患肢支托)：</span>
+                  <span class="text-[11px] text-indigo-700 font-mono">接觸前感控</span>
+                </div>
+                <p class="text-slate-800 leading-relaxed">
+                  「（執行酒精乾洗手）Siti 小姐，我現在要幫您檢查右腳。請問目前如果不動，疼痛大約幾分（0–10 分）？（Siti 回覆 7 分）。好，我會以雙手托住小腿及腳後跟，請不要用力踩地，我們動作會很溫柔。」
+                </p>
+              </div>
+
+              <!-- Dialogue: Radiographer B Finding Patch -->
+              <div class="bg-indigo-50/70 border border-indigo-200 p-3 rounded-xl space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-indigo-900 flex items-center gap-1">🛠️ 放射師 B (輕柔脫襪、視診皮膚並發現貼片)：</span>
+                  <span class="text-[11px] text-indigo-700 font-mono">外物發現</span>
+                </div>
+                <p class="text-slate-800 leading-relaxed">
+                  「（輕柔捲下黑色不透明襪子）視診右足背局部腫脹瘀青、皮膚無破皮傷口、腳趾溫暖、CRT < 2秒。在<strong>第三蹠骨投影區皮膚上，發現貼著一枚直徑約 2 公分的圓形貼布</strong>。Siti 小姐，請問這片貼布是什麼呢？」
+                </p>
+              </div>
+
+              <!-- Dialogue: Patient Siti -->
+              <div class="bg-slate-100 border border-slate-200 p-2.5 rounded-xl space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-slate-800 flex items-center gap-1">🧕 病人 Siti：</span>
+                  <span class="text-[11px] text-slate-500 font-mono">貼片來源</span>
+                </div>
+                <p class="text-slate-700 italic">
+                  「老闆說是日本磁力貼（含金屬顆粒），說貼了血液循環好比較不痛。」
+                </p>
+              </div>
+
+              <!-- Dialogue: Radiographer B Explaining Artifact -->
+              <div class="bg-indigo-50/70 border border-indigo-200 p-3 rounded-xl space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-indigo-900 flex items-center gap-1">🛠️ 放射師 B (說明金屬遮蔽假影，取得同意後安全撕除)：</span>
+                  <span class="text-[11px] text-indigo-700 font-mono">假影防範</span>
+                </div>
+                <p class="text-slate-800 leading-relaxed">
+                  「Siti 小姐，這塊磁力貼中間含有高密度金屬顆粒。如果貼著照 X 光，金屬會把骨頭遮住，醫師就沒辦法看清楚骨頭有沒有裂開（骨折），可能會因此重照。我現在幫您慢慢撕下來放在夾鏈袋，檢查完再交給您好嗎？（取得同意後輕柔揭除，未按壓骨折處）」
+                </p>
+              </div>
+            </div>
+
+            <!-- Director Checkpoint -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 text-xs">
+              <div class="text-emerald-700 font-medium">
+                ✓ <strong>安全準則：</strong>不可暴力撕扯醫療敷料；不可反覆重壓疑似骨折處來尋找外物！
+              </div>
+              <button onclick="stampCurrentTime('C10')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-[11px] font-mono">
+                ⏱️ 戳記階段三時間
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TIMELINE STAGE 4 -->
+        <div id="stage-4" class="relative group">
+          <div class="absolute -left-6 sm:-left-10 top-1 w-6 sm:w-8 h-6 sm:h-8 rounded-full bg-brand-600 text-white font-bold flex items-center justify-center text-xs shadow-md border-2 border-white">
+            4
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold px-2 py-0.5 bg-sky-100 text-sky-800 rounded">階段四</span>
+                  <h3 class="text-base font-bold text-slate-900">ISBAR 醫師通報、非負重攝影優化與影像品質檢核</h3>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">時間參考：10分鐘版 (05:30–08:00) ｜ 15分鐘競賽 (08:30–12:00)</p>
+              </div>
+              <div class="flex items-center gap-1.5 text-xs">
+                <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded font-mono">對應核心查核：C11 ~ C14</span>
+              </div>
+            </div>
+
+            <!-- Dialogue Script -->
+            <div class="space-y-2.5 text-xs">
+              <span class="font-bold text-slate-800 block">💬 現場擬真對話與互動腳本：</span>
+
+              <!-- Dialogue: Radiographer A to ED Doctor via ISBAR -->
+              <div class="bg-sky-50/70 border border-sky-200 p-3 rounded-xl space-y-1.5 font-mono">
+                <div class="flex items-center justify-between font-sans">
+                  <span class="font-bold text-sky-900 flex items-center gap-1">👤 放射師 A 致電急診醫師 (標準結構化 ISBAR 通報)：</span>
+                  <span class="text-[11px] text-sky-700">精準回報</span>
+                </div>
+                <p class="text-slate-800 leading-relaxed font-sans">
+                  「<strong>[I 身分]</strong> 醫師您好，我是急診 X 光室放射師 A。<br>
+                  <strong>[S 現況]</strong> 病人 Siti（SIM0001）排照右足 X 光，檢查前發現自述懷孕資訊與單據不符，目前已暫停曝光決策。<br>
+                  <strong>[B 背景]</strong> 病人工傷右足劇痛，檢查單由仲介代填 No；經通譯私下詢問，病人自述停經約 8 週、驗孕陽性，要求對仲介保密。<br>
+                  <strong>[A 評估]</strong> 右足腫脹疼痛，足背含金屬磁力貼已在同意下安全移除，足趾溫暖無神經血管缺損。足部攝影主射束遠離子宮，已向病人解說極低劑量與隱私保護，病人理解並同意檢查。<br>
+                  <strong>[R 建議]</strong> 請醫師確認是否維持右足非負重攝影？我們將做好準直避免重照，後續將懷孕資訊私密交接予急診主護團隊安排追蹤。」
+                </p>
+              </div>
+
+              <!-- Dialogue: ED Physician response -->
+              <div class="bg-slate-900 text-slate-100 p-3 rounded-xl space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-emerald-400 flex items-center gap-1">👨‍⚕️ 急診醫師 (導演扮演回覆)：</span>
+                  <span class="text-[11px] text-slate-400 font-mono">正當性核可</span>
+                </div>
+                <p class="text-slate-200 italic leading-relaxed">
+                  「疑第三蹠骨骨折有檢查正當性。請依懷孕影像安全原則，在病人同意下執行右足非負重 X 光（AP、斜位、側位）。請精確準直、放置側別標記避免重照。絕不要向仲介透露懷孕，照完私密交給主護，我們會安排後續超音波。」
+                </p>
+              </div>
+
+              <!-- Dialogue: Radiographer A closed-loop -->
+              <div class="bg-sky-50/70 border border-sky-200 p-3 rounded-xl space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-sky-900 flex items-center gap-1">👤 放射師 A (閉環覆誦 Closed-Loop)：</span>
+                  <span class="text-[11px] text-sky-700 font-mono">覆誦核對</span>
+                </div>
+                <p class="text-slate-800">
+                  「覆誦收到：確認執行右足非負重攝影三視圖，嚴格準直與擺位，並向急診主護私密交班懷孕資訊。」
+                </p>
+              </div>
+
+              <!-- Dialogue: Radiographer B Positioning -->
+              <div class="bg-indigo-50/70 border border-indigo-200 p-3 rounded-xl space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-indigo-900 flex items-center gap-1">🛠️ 放射師 B (非負重擺位、右側標記與曝光)：</span>
+                  <span class="text-[11px] text-indigo-700 font-mono">最適化技術</span>
+                </div>
+                <p class="text-slate-800 leading-relaxed">
+                  「右足平放於照射板上，採非負重舒適擺位，使用墊木妥善支托；<strong>放置右側標記 (R Marker) 於適當位置不遮蔽骨骼</strong>；準直儀縮小照射野僅涵蓋右足部必要解剖構造。清場完畢，執行模擬曝光！」
+                </p>
+              </div>
+            </div>
+
+            <!-- Director Checkpoint -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 text-xs">
+              <button onclick="openQCardModal()" class="px-2.5 py-1 bg-brand-50 hover:bg-brand-100 text-brand-800 border border-brand-200 rounded font-medium">
+                📷 立即核對模擬影像品質 (發放 Q0 / Q1 卡)
+              </button>
+              <button onclick="stampCurrentTime('C14')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-[11px] font-mono">
+                ⏱️ 戳記階段四時間
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TIMELINE STAGE 5 -->
+        <div id="stage-5" class="relative group">
+          <div class="absolute -left-6 sm:-left-10 top-1 w-6 sm:w-8 h-6 sm:h-8 rounded-full bg-brand-600 text-white font-bold flex items-center justify-center text-xs shadow-md border-2 border-white">
+            5
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold px-2 py-0.5 bg-sky-100 text-sky-800 rounded">階段五</span>
+                  <h3 class="text-base font-bold text-slate-900">仲介界線維持、移工權益諮詢支援與安全交接轉銜</h3>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">時間參考：10分鐘版 (08:00–10:00) ｜ 15分鐘競賽 (12:00–15:00)</p>
+              </div>
+              <div class="flex items-center gap-1.5 text-xs">
+                <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded font-mono">對應核心查核：C15 ~ C18</span>
+              </div>
+            </div>
+
+            <!-- Dialogue Script -->
+            <div class="space-y-2.5 text-xs">
+              <span class="font-bold text-slate-800 block">💬 現場擬真對話與互動腳本：</span>
+
+              <!-- Dialogue: Agent knocks aggressively -->
+              <div class="bg-amber-50/70 border border-amber-200 p-3 rounded-xl space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-amber-900 flex items-center gap-1">🧑‍💼 仲介 (用力敲門探頭，催促探聽)：</span>
+                  <span class="text-[11px] text-amber-700 font-mono">隱私威脅</span>
+                </div>
+                <p class="text-slate-800 italic">
+                  「照完沒啊？怎麼照這麼久？她到底有沒有懷孕？有沒有其他毛病啊？快告訴我！」
+                </p>
+              </div>
+
+              <!-- Dialogue: Radiographer A Professional Boundary -->
+              <div class="bg-sky-50/70 border border-sky-200 p-3 rounded-xl space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-sky-900 flex items-center gap-1">👤 放射師 A (堅守醫療法第 72 條隱私界線)：</span>
+                  <span class="text-[11px] text-sky-700 font-mono">專業應對</span>
+                </div>
+                <p class="text-slate-800 leading-relaxed">
+                  「仲介先生您好，我們剛剛依標準程序完成了右腳 X 光拍攝。依據醫療法規，詳細影像與各項健康評估將由急診主治醫師在診間向病人本人解說，請您協助推輪椅陪同 Siti 小姐回急診候診區看報告。」
+                </p>
+              </div>
+
+              <!-- Dialogue: Radiographer A to Siti -->
+              <div class="bg-sky-50/70 border border-sky-200 p-3 rounded-xl space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-sky-900 flex items-center gap-1">👤 放射師 A (向 Siti 說明移工權益與轉介管道)：</span>
+                  <span class="text-[11px] text-sky-700 font-mono">權益保障</span>
+                </div>
+                <p class="text-slate-800 leading-relaxed">
+                  「Siti 小姐，請您放心，我們沒有向仲介說任何事情。在台灣，若您擔心懷孕遭解僱或工作權益受損，醫院有社工室可協助，勞動部也有 24 小時免費『1955 移工諮詢專線』提供印尼語法律支援。我們已將您的懷孕資訊記錄在醫療授權系統，由急診護理師接手為您安排後續照護。」
+                </p>
+              </div>
+
+              <!-- Dialogue: Radiographer B to ED Nurse -->
+              <div class="bg-purple-50/70 border border-purple-200 p-3 rounded-xl space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-purple-900 flex items-center gap-1">🛠️ 放射師 B (與急診主護面對面私密交班)：</span>
+                  <span class="text-[11px] text-purple-700 font-mono">安全轉銜</span>
+                </div>
+                <p class="text-slate-800 leading-relaxed">
+                  「學姐您好，交班右足外傷移工 Siti。右足非負重 X 光已完成，足背磁力貼已取下。病人私下自述停經約 8 週、驗孕陽性，<strong>強烈要求不要告知仲介</strong>。急診醫師已獲通報，請協助後續婦產科/超音波追蹤並維護病患隱私。」
+                </p>
+              </div>
+            </div>
+
+            <!-- Director Checkpoint -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 text-xs">
+              <div class="text-emerald-700 font-medium">
+                ✓ <strong>演練安全終點：</strong>未向仲介洩漏懷孕、完成假影移除與非負重攝影、客觀病歷登錄、完成急診護理私密交接。
+              </div>
+              <button onclick="stampCurrentTime('C18')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-[11px] font-mono">
+                ⏱️ 戳記階段五時間
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Quick Action to Proceed to Evaluation -->
+      <div class="bg-sky-50 border border-sky-200 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+        <div>
+          <span class="font-bold text-sky-900 text-sm">情境演練結束？</span>
+          <p class="text-sky-700 mt-0.5">可檢視「溝通指引」、「回饋卡片」，或前往頁尾的「統一評核檢核表」進行綜合客觀評核。</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="switchTab('debriefing')" class="px-3 py-2 bg-white hover:bg-sky-100 text-sky-800 border border-sky-300 rounded-xl font-semibold transition-colors">
+            前往 PEARLS 復盤
+          </button>
+          <button onclick="switchTab('evaluation')" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-semibold shadow-sm transition-colors">
+            前往統一評核檢核表 ➔
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 2: ISBAR 與隱私溝通指引 (COMMUNICATION SCRIPTS & LEGAL FRAMEWORK)      -->
+    <!-- ========================================================================= -->
+    <div id="view-communication" class="tab-content hidden space-y-6">
+
+      <!-- ISBAR Card -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div>
+            <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+              <span class="p-1 rounded bg-brand-100 text-brand-800 text-xs font-bold">ISBAR</span>
+              急診 X 光室放射師通報急診醫師標準腳本
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">出現新懷孕資訊時，須立即暫停未完成之曝光決策，完成正當性再確認。</p>
+          </div>
+          <button onclick="copyISBARScript()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium transition-colors flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+            複製台詞
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-3 text-xs">
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <span class="w-6 h-6 rounded-full bg-slate-800 text-white font-bold flex items-center justify-center text-xs mb-2">I</span>
+            <strong class="text-slate-800 block mb-1">身分 (Identity)</strong>
+            <p class="text-slate-600 leading-relaxed font-mono">
+              「醫師您好，我是急診 X 光室放射師 A。病人 Siti、SIM0001。」
+            </p>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <span class="w-6 h-6 rounded-full bg-slate-800 text-white font-bold flex items-center justify-center text-xs mb-2">S</span>
+            <strong class="text-slate-800 block mb-1">現況 (Situation)</strong>
+            <p class="text-slate-600 leading-relaxed font-mono">
+              「排右足外傷攝影，發現懷孕資訊與單據不符，目前尚未曝光。」
+            </p>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <span class="w-6 h-6 rounded-full bg-slate-800 text-white font-bold flex items-center justify-center text-xs mb-2">B</span>
+            <strong class="text-slate-800 block mb-1">背景 (Background)</strong>
+            <p class="text-slate-600 leading-relaxed font-mono">
+              「工傷右足痛，單據原填 No 由仲介代勾；私下自述停經 8 週驗孕陽性，要求對仲介保密。」
+            </p>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <span class="w-6 h-6 rounded-full bg-slate-800 text-white font-bold flex items-center justify-center text-xs mb-2">A</span>
+            <strong class="text-slate-800 block mb-1">評估 (Assessment)</strong>
+            <p class="text-slate-600 leading-relaxed font-mono">
+              「足部遠離骨盆，胎兒劑量極低；足背金屬貼片已移除，病人理解同意非負重攝影。」
+            </p>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <span class="w-6 h-6 rounded-full bg-slate-800 text-white font-bold flex items-center justify-center text-xs mb-2">R</span>
+            <strong class="text-slate-800 block mb-1">建議 (Recommendation)</strong>
+            <p class="text-slate-600 leading-relaxed font-mono">
+              「建議依醫囑完成非負重攝影並優化準直；後續由急診安排超音波與社工支援。」
+            </p>
+          </div>
+        </div>
+
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-950 flex items-start gap-2">
+          <span class="font-bold shrink-0 text-emerald-800">閉環覆誦 (Closed-Loop)：</span>
+          <p>
+            學員覆述：「收到，依正當性核可執行右足非負重攝影三視圖，嚴格準直避免重照，後續向急診主護私密交接懷孕評估。」
+          </p>
+        </div>
+      </div>
+
+      <!-- Legal & Privacy Guidelines -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Medical Law 72 & Privacy -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3 text-xs">
+          <h4 class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            醫療法第 72 條與仲介界線守則
+          </h4>
+          <div class="space-y-2 text-slate-700 leading-relaxed">
+            <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+              <strong class="text-brand-700 block mb-0.5">① 仲介非病人之法定代理人</strong>
+              <p>成年具判斷力之移工，其健康資訊受我國《醫療法第 72 條》保密保障。任何人（包含雇主與仲介）未經病人書面同意，醫療機構無權透露其懷孕或隱私病情。</p>
+            </div>
+            <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+              <strong class="text-brand-700 block mb-0.5">② 嚴禁公開廣播或在可見處註記</strong>
+              <p>切勿在叫號螢幕、候診大廳、公開白板或影像上打上「懷孕」字樣；敏感紀錄僅能登錄於醫療資訊系統之授權臨床欄位。</p>
+            </div>
+            <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+              <strong class="text-brand-700 block mb-0.5">③ 移工懷孕保障與 1955 專線</strong>
+              <p>依勞動部規範，雇主不得以懷孕為由解僱移工或強迫離境。告知病人必要時可透過社工或 1955 專線取得多語法律諮詢。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Documentation Card -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3 text-xs">
+          <h4 class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            授權病歷客觀紀錄範本
+          </h4>
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 font-mono text-[11px] leading-relaxed text-slate-700 space-y-1">
+            <p>
+              「受檢者 Siti（SIM0001）由通譯協助確認身分與受傷側別無誤。原申請單 Pregnancy: No 係陪同者代答。在私密環境下，受檢者自述 LMP 約 8 週前、居家驗孕陽性，因擔憂遭解僱強烈要求對仲介保密。<br><br>
+              經電聯急診醫師確認右足影像之正當性。向受檢者解釋右足主射束遠離骨盆、胎兒預期劑量極低後取得檢查同意。右足背視診見直徑約 2cm 圓形磁力貼，向病人說明遮蔽骨骼風險後取得同意安全移除。採非負重擺位、右側標記 (R) 及縮小準直完成 AP/Oblique/Lateral 三視圖。影像品管無假影遮蔽。<br><br>
+              仲介催問時維持保密界線，僅告知流程資訊。已向病人說明 1955 與社工諮詢資源，懷孕事宜已私密交班予急診接手醫護團隊。」
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 3: 模擬工具與回饋卡片 (SIMULATOR TOOLS & CARDS)                        -->
+    <!-- ========================================================================= -->
+    <div id="view-cards" class="tab-content hidden space-y-6">
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Vitals Card Entry -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-xs font-bold">生理資料</span>
+            <span class="text-xs text-slate-400">口述評估提供</span>
+          </div>
+          <h4 class="font-bold text-slate-900 text-sm">Siti 生理徵象與患肢評估卡</h4>
+          <p class="text-xs text-slate-500">學員提出測量或評估時方可釋出，不靠演員刻意喘氣或受傷。</p>
+          <button onclick="openVitalsModal()" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-colors">
+            查看數值卡
+          </button>
+        </div>
+
+        <!-- Image Quality Card Entry -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="px-2 py-0.5 rounded bg-sky-100 text-sky-800 text-xs font-bold">影像品管</span>
+            <span class="text-xs text-slate-400">曝光後發卡</span>
+          </div>
+          <h4 class="font-bold text-slate-900 text-sm">文字影像回饋卡 (Q0 / Q1)</h4>
+          <p class="text-xs text-slate-500">依學員曝光前是否主動發現並移除足背磁力貼決定發放 Q0 或 Q1。</p>
+          <button onclick="openQCardModal()" class="w-full py-2 bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 rounded-xl text-xs font-semibold transition-colors">
+            查看影像卡
+          </button>
+        </div>
+
+        <!-- Safety Challenge Card Entry -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-xs font-bold">加強情境</span>
+            <span class="text-xs text-slate-400">團隊安全異議</span>
+          </div>
+          <h4 class="font-bold text-slate-900 text-sm">資深同仁施壓情境 (Two-Challenge)</h4>
+          <p class="text-xs text-slate-500">資深同仁催促「不用通譯、仲介簽一簽快照」，考驗學員提出安全異議。</p>
+          <button onclick="triggerChallengeModal()" class="w-full py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 rounded-xl text-xs font-semibold transition-colors">
+            觸發安全異議
+          </button>
+        </div>
+      </div>
+
+      <!-- Radiation Protection Principles -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3 text-xs text-slate-700">
+        <h4 class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          IAEA & ACR 孕婦輻射安全核心考點說明
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-1">
+            <strong class="text-brand-700 block">① 正當性先於最適化</strong>
+            <p>即使懷孕，若臨床高度懷疑骨折，且未檢查可能延誤治療導致永久畸形，則照射具正當性。不可因懷孕一概拒檢。</p>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-1">
+            <strong class="text-brand-700 block">② 遠端肢體劑量微乎其微</strong>
+            <p>足部攝影主射束遠離骨盆，子宮僅承受微量散射線（遠小於 0.001 mGy，甚至低於日常自然背景輻射），不增加致畸或流產風險。</p>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-1">
+            <strong class="text-brand-700 block">③ 鉛衣非通行證、準直是關鍵</strong>
+            <p>腹部鉛衣不能取代檢查正當性；最適化的核心在於「良好準直 (Collimation)」與「一次擺位成功避免重照」。</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 4: 復盤 PEARLS 與匯出 (DEBRIEFING & PRINTABLE REPORT)                   -->
+    <!-- ========================================================================= -->
+    <div id="view-debriefing" class="tab-content hidden space-y-6">
+
+      <!-- PEARLS 5-min Structured Framework -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div>
+            <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+              <span class="p-1 rounded bg-amber-100 text-amber-800 text-xs font-bold">PEARLS</span>
+              教師 5 分鐘結構化復盤引導架構 (Eppich & Cheng)
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">聚焦移工隱私維護、假影防範與跨專業溝通，設定明確改善行動。</p>
+          </div>
+          <span class="text-xs text-slate-400 font-mono">時間控制：4 階段共 5 分鐘</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
+          <div class="bg-blue-50/60 border border-blue-100 p-3 rounded-xl">
+            <span class="text-blue-800 font-bold block mb-1">1. 反應期 (Reactions) 0:00–0:30</span>
+            <p class="text-slate-700 italic">「仲介在旁邊催促、病人說自己驗孕陽性時，你們當時心裡哪個時刻最有壓力？」</p>
+            <span class="text-[11px] text-slate-500 block mt-1">目的：接住焦慮與情緒，不立即批判好壞。</span>
+          </div>
+          <div class="bg-indigo-50/60 border border-indigo-100 p-3 rounded-xl">
+            <span class="text-indigo-800 font-bold block mb-1">2. 描述期 (Description) 0:30–1:00</span>
+            <p class="text-slate-700 italic">「請用兩句話說明剛才碰到的主要臨床挑戰，以及最後對病人和仲介的安排。」</p>
+            <span class="text-[11px] text-slate-500 block mt-1">目的：對齊客觀事實，確認大家討論同一件事。</span>
+          </div>
+          <div class="bg-amber-50/60 border border-amber-100 p-3 rounded-xl">
+            <span class="text-amber-800 font-bold block mb-1">3. 分析期 (Analysis) 1:00–4:00</span>
+            <p class="text-slate-700 italic">「看到病人說懷孕，團隊第一時間先做什麼？足部照相對胎兒到底有沒有風險？為什麼一定要脫襪視診？」</p>
+            <span class="text-[11px] text-slate-500 block mt-1">目的：深入探討心智模型，釐清正當性與金屬假影。</span>
+          </div>
+          <div class="bg-emerald-50/60 border border-emerald-100 p-3 rounded-xl">
+            <span class="text-emerald-800 font-bold block mb-1">4. 應用期 (Application) 4:00–5:00</span>
+            <p class="text-slate-700 italic">「下一次演練時，由誰在第一時間負責請仲介至等候區？由誰檢查患肢外物？下次的具體動作是什麼？」</p>
+            <span class="text-[11px] text-slate-500 block mt-1">目的：確立明確可觀察的改善當責行動。</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Printable Report Preview & Export Console -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+          <div>
+            <h3 class="font-bold text-slate-900 text-base">演練成果彙整與正式評核報告</h3>
+            <p class="text-xs text-slate-500 mt-0.5">支援一鍵列印紙本報告或複製文字摘要至教學管理系統。</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="copyFullReportText()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+              複製評核摘要
+            </button>
+            <button onclick="window.print()" class="px-3.5 py-1.5 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1 shadow-sm transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+              列印評核結果單
+            </button>
+          </div>
+        </div>
+
+        <!-- Rendered Report Content for Print/Screen -->
+        <div id="printableReportCard" class="bg-slate-50 border border-slate-200 rounded-xl p-5 text-slate-800 space-y-4 text-xs font-mono">
+          <div class="text-center border-b border-slate-300 pb-3">
+            <h2 class="text-base font-bold text-slate-900 font-sans tracking-wide">急診移工足部外傷演練評核表 (XR PRIV 01)</h2>
+            <div class="flex justify-center gap-4 text-xs text-slate-500 mt-1 font-sans">
+              <span>演練日期：<span id="repDate" class="text-slate-800 font-semibold">2026-09-29</span></span>
+              <span>放射師 A：<span id="repTeamA" class="text-slate-800 font-semibold">未填寫</span></span>
+              <span>放射師 B：<span id="repTeamB" class="text-slate-800 font-semibold">未填寫</span></span>
+              <span>主考官：<span id="repJudge" class="text-slate-800 font-semibold">未填寫</span></span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-white p-3 rounded-lg border border-slate-200 font-sans">
+            <div>
+              <span class="text-slate-400 block text-[11px]">換算總得分</span>
+              <span id="repScore" class="text-2xl font-black text-brand-700">0.0 分</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[11px]">達成項目</span>
+              <span id="repItems" class="text-sm font-bold text-slate-800">0 / 18 項</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[11px]">安全紅線指標 ★</span>
+              <span id="repRedFlags" class="text-sm font-bold text-emerald-600">無觸發</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[11px]">演練整體結論</span>
+              <span id="repStatus" class="text-sm font-bold text-slate-800">評核中</span>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <div class="font-bold text-slate-900 font-sans">未做到項目 (Gaps to Improve)：</div>
+            <ul id="repMissedList" class="list-disc list-inside space-y-1 text-slate-600 bg-white p-3 rounded-lg border border-slate-200">
+              <li class="text-slate-400">尚未產生評核紀錄或全部項目皆已達成</li>
+            </ul>
+          </div>
+
+          <div class="space-y-2">
+            <div class="font-bold text-slate-900 font-sans">考官質性指導與行動承諾：</div>
+            <div class="bg-white p-3 rounded-lg border border-slate-200 space-y-2 text-slate-700 font-sans">
+              <div><strong>保留有效行為：</strong><span id="repGood">無特別記錄</span></div>
+              <div><strong>落差與根本原因：</strong><span id="repNeedWork">無特別記錄</span></div>
+              <div><strong>下次行動方案：</strong><span id="repAction">由 <span id="repActionRole">指定成員</span> 執行 <span id="repActionContent">具體動作</span></span></div>
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center pt-4 border-t border-slate-300 text-[11px] text-slate-500 font-sans">
+            <div>核定依據：IAEA Radiation Protection of Pregnant Women / 醫療法第 72 條 / TeamSTEPPS CUS</div>
+            <div>主考官簽署：____________________</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 5: 統一評核檢核表 (UNIFIED CHECKLIST CONSOLE - PLACED AT THE END)      -->
+    <!-- ========================================================================= -->
+    <div id="view-evaluation" class="tab-content hidden space-y-6">
+      
+      <!-- Scoring Summary Card & Actions -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+          <!-- Left: Team Info & Metrics -->
+          <div class="space-y-2">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs font-bold uppercase tracking-wider bg-slate-100 text-slate-700 px-2 py-1 rounded">臨床技能形成性評核</span>
+              <span class="text-xs bg-sky-50 text-sky-700 border border-sky-200 px-2 py-0.5 rounded font-medium">18 項精煉核心行為 (整合五構面)</span>
+              <span class="text-xs text-slate-500">標準配置：放射師 2 名 (放射師 A & B)</span>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm pt-1">
+              <div>
+                <span class="text-xs text-slate-400 block">演練日期</span>
+                <input type="text" id="evalDate" class="font-medium text-slate-700 bg-transparent border-b border-slate-300 focus:outline-none focus:border-brand-500 text-xs w-28" value="2026-09-29">
+              </div>
+              <div>
+                <span class="text-xs text-slate-400 block">放射師 A (主導/通報)</span>
+                <input type="text" id="evalTeamA" class="font-medium text-slate-700 bg-transparent border-b border-slate-300 focus:outline-none focus:border-brand-500 text-xs w-28" placeholder="學員 A 姓名">
+              </div>
+              <div>
+                <span class="text-xs text-slate-400 block">放射師 B (照護/影像)</span>
+                <input type="text" id="evalTeamB" class="font-medium text-slate-700 bg-transparent border-b border-slate-300 focus:outline-none focus:border-brand-500 text-xs w-28" placeholder="學員 B 姓名">
+              </div>
+              <div>
+                <span class="text-xs text-slate-400 block">評核主考官</span>
+                <input type="text" id="evalJudge" class="font-medium text-slate-700 bg-transparent border-b border-slate-300 focus:outline-none focus:border-brand-500 text-xs w-24" placeholder="主考官">
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Interactive Live Score Gauge -->
+          <div class="flex items-center gap-5 bg-gradient-to-br from-slate-50 to-sky-50 p-4 rounded-xl border border-sky-100 self-stretch sm:self-auto justify-between sm:justify-end">
+            <div class="text-right">
+              <div class="text-xs text-slate-500 font-medium">總分換算 (滿分100)</div>
+              <div class="flex items-baseline justify-end gap-1">
+                <span id="totalScoreText" class="text-3xl sm:text-4xl font-black text-brand-700">0.0</span>
+                <span class="text-xs text-slate-400 font-bold">/ 100</span>
+              </div>
+              <div class="text-xs text-slate-500 mt-0.5">
+                做到 <span id="doneCountText" class="font-bold text-emerald-600">0</span> / 適用 <span id="appliedCountText" class="font-bold text-slate-700">18</span> 項
+                (<span id="naCountText" class="text-slate-400 font-normal">0項N/A</span>)
+              </div>
+            </div>
+            <!-- Radial / Bar Gauge -->
+            <div class="w-16 h-16 rounded-full border-4 border-slate-200 flex items-center justify-center relative overflow-hidden" id="gaugeRing">
+              <div id="gaugeFill" class="absolute inset-0 bg-brand-500 opacity-20 transform origin-bottom transition-all duration-300" style="height: 0%;"></div>
+              <span id="gaugePercent" class="text-xs font-bold text-brand-900 relative z-10">0%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Priority Safety Red Flags Warning Banner -->
+        <div class="mt-4 pt-3 border-t border-slate-100">
+          <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-xs">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="font-bold text-rose-800 flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-rose-600 fill-current" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                演練優先重練指標 (Priority Red-Lines ★) — 任一觸發須於復盤優先檢討並安排重練：
+              </span>
+              <span id="redFlagBadge" class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold">目前無觸發</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 text-slate-700">
+              <label class="flex items-start gap-1.5 cursor-pointer hover:text-rose-900">
+                <input type="checkbox" id="rf1" onchange="updateRedFlags()" class="mt-0.5 rounded text-rose-600 focus:ring-rose-500">
+                <span>① 身分或側別未釐清即執行錯誤的模擬曝光</span>
+              </label>
+              <label class="flex items-start gap-1.5 cursor-pointer hover:text-rose-900">
+                <input type="checkbox" id="rf2" onchange="updateRedFlags()" class="mt-0.5 rounded text-rose-600 focus:ring-rose-500">
+                <span>② 無適當授權向仲介揭露懷孕，或將敏感隱私公開標記</span>
+              </label>
+              <label class="flex items-start gap-1.5 cursor-pointer hover:text-rose-900">
+                <input type="checkbox" id="rf3" onchange="updateRedFlags()" class="mt-0.5 rounded text-rose-600 focus:ring-rose-500">
+                <span>③ 忽視劇烈疼痛，粗暴按壓骨折處或強撕醫療敷料</span>
+              </label>
+              <label class="flex items-start gap-1.5 cursor-pointer hover:text-rose-900">
+                <input type="checkbox" id="rf4" onchange="updateRedFlags()" class="mt-0.5 rounded text-rose-600 focus:ring-rose-500">
+                <span>④ 知悉驗孕陽性，仍蓄意記錄為「病人否認懷孕」造假</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter & Quick Buttons Bar -->
+        <div class="flex flex-wrap items-center justify-between gap-3 mt-4 pt-3 border-t border-slate-100 text-xs">
+          <div class="flex items-center gap-2">
+            <span class="font-medium text-slate-600">檢視篩選：</span>
+            <button onclick="filterChecklist('all')" id="filter-all" class="px-2.5 py-1 rounded-md bg-brand-600 text-white font-medium">全部 (18項)</button>
+            <button onclick="filterChecklist('critical')" id="filter-critical" class="px-2.5 py-1 rounded-md bg-slate-100 text-rose-600 hover:bg-slate-200">★ 安全關鍵 (8項)</button>
+            <button onclick="filterChecklist('unscored')" id="filter-unscored" class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200">未勾選 (<span id="unscoredCount">18</span>)</button>
+            <button onclick="filterChecklist('missed')" id="filter-missed" class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200">未做到 (0)</button>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="quickFillAll(true)" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded transition-colors" title="快速全選做到 (測試/示範用)">
+              全部設為做到
+            </button>
+            <button onclick="resetEvaluation()" class="px-2 py-1 bg-slate-100 hover:bg-rose-100 text-slate-600 hover:text-rose-700 rounded transition-colors">
+              清空評核表
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- The Unified Table: 18 Key Behavioral Criteria -->
+      <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-sm">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs uppercase font-semibold">
+                <th class="py-3 px-3 w-14 text-center">編號</th>
+                <th class="py-3 px-4 min-w-[280px]">核心查核內容與做到標準</th>
+                <th class="py-3 px-3 w-60 text-center">評核判定 (單選)</th>
+                <th class="py-3 px-3 min-w-[220px]">觀察紀錄與時間戳記</th>
+              </tr>
+            </thead>
+            <tbody id="checklistBody" class="divide-y divide-slate-100 text-slate-700">
+              <!-- Rendered dynamically by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Qualitative Feedback & Action Plan -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+        <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+          <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+          主審質性回饋與重練設定
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">保留的有效團隊行為 (Strengths)：</label>
+            <textarea id="feedbackEffective" rows="3" class="w-full p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:border-brand-500 custom-scrollbar" placeholder="例如：放射師 A 能主動辨認語言障礙並啟動通譯，在私密環境下耐心取得懷孕自述；放射師 B 輕柔脫襪並在第三蹠骨發現磁力貼，主動向病人衛教金屬假影風險並在同意下安全移除..."></textarea>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">優先改善落差與情境原因 (Gaps & Root Causes)：</label>
+            <textarea id="feedbackGap" rows="3" class="w-full p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:border-brand-500 custom-scrollbar" placeholder="例如：仲介在門外敲門時差點脫口說出驗孕陽性；一度想直接取消足部檢查，未向醫師確認正當性與低劑量..."></textarea>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
+          <div>
+            <label class="block text-slate-500 mb-1">下次具體改進行動：</label>
+            <input type="text" id="actionNext" class="w-full p-2 rounded-lg border border-slate-200" placeholder="例如：由放射師 A 負責守住門外仲介溝通界線，嚴格落實醫療法第 72 條">
+          </div>
+          <div>
+            <label class="block text-slate-500 mb-1">當責負責角色：</label>
+            <input type="text" id="actionRole" class="w-full p-2 rounded-lg border border-slate-200" placeholder="例如：放射師 A (溝通與通報主導)">
+          </div>
+          <div>
+            <label class="block text-slate-500 mb-1">演練總結論：</label>
+            <select id="evalConclusion" class="w-full p-2 rounded-lg border border-slate-200 bg-white font-medium text-slate-700">
+              <option value="pass">✓ 達成目標，可進入下階段整合練習</option>
+              <option value="retest">⚠️ 需針對落差項目進行短段重練</option>
+              <option value="invalid">⛔ 觸發紅線/條件不足，需完整重測</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Modals & Popups -->
+  <div id="appModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 id="modalTitle" class="font-bold text-base text-slate-900">提示資訊</h3>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="modalBody" class="text-xs text-slate-700 leading-relaxed space-y-2">
+        <!-- Injected via JavaScript -->
+      </div>
+      <div class="flex justify-end pt-2">
+        <button onclick="closeModal()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold transition-colors">
+          確認知悉
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Bubble -->
+  <div id="appToast" class="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-lg text-xs font-medium flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <span id="toastIcon">ℹ️</span>
+    <span id="toastMsg">訊息內容</span>
+  </div>
+
+  <!-- JavaScript Engine & Data Structures -->
+  <script>
+    // 18 Consolidated Observable Criteria (Tailored from 50 items, highlighting ★ critical red-lines)
+    const CHECKLIST_ITEMS = [
+      {
+        id: "C01",
+        category: "身分與部位",
+        isCritical: true,
+        title: "★ 雙重身分核對與部位一致性確認",
+        standard: "由病人本人或手圈/醫囑取得至少兩項識別資料（姓名Siti、出生年月日2004-04-18、病歷號SIM0001）；向病人核對右足檢查部位一致，不採仲介單方代答。"
+      },
+      {
+        id: "C02",
+        category: "語言與通譯",
+        isCritical: true,
+        title: "★ 辨認語言障礙並啟動合格通譯管道",
+        standard: "主動確認病人主要語言（印尼語）及理解程度，不把點頭當已理解；啟動經核可之通譯管道，敏感醫療內容不依賴仲介代翻。"
+      },
+      {
+        id: "C03",
+        category: "私密環境",
+        isCritical: true,
+        title: "★ 徵詢意願並建立無旁人窺探之私密環境",
+        standard: "徵詢病人意願後，以檢查更衣等例行流程請仲介至等候區稍坐；關閉檢查室防護門，確保談話不被外人聽見，建立可信任談話空間。"
+      },
+      {
+        id: "C04",
+        category: "末次月經詢問",
+        isCritical: true,
+        title: "★ 私密直接詢問末次月經與懷孕自述",
+        standard: "在私密環境以中性態度直接詢問末次月經時間 (LMP)，不以未婚或外籍身分排除懷孕；探詢懷孕自述來源（自驗陽性），辨明與原單據差異。"
+      },
+      {
+        id: "C05",
+        category: "醫療保密承諾",
+        isCritical: true,
+        title: "★ 承諾醫療保密範圍並堅拒向仲介洩漏",
+        standard: "回應恐懼，說明醫療保密義務（醫療法第 72 條）與必要照護團隊知情範圍，明確向病人承諾絕不擅自向仲介透露懷孕資訊。"
+      },
+      {
+        id: "C06",
+        category: "暫停曝光決策",
+        isCritical: true,
+        title: "★ 獲知新懷孕資訊時暫停未完成之曝光",
+        standard: "獲知可能懷孕時，立即暫停未完成之曝光決策，不因懷孕一概拒檢，亦不盲目直接照射，先釐清流程並與照護團隊確認計畫。"
+      },
+      {
+        id: "C07",
+        category: "輻射風險溝通",
+        isCritical: false,
+        title: "清楚說明低劑量、子宮在射束外與優化",
+        standard: "以病人可理解語言說明右足為主射束、子宮不在射束內且預期胎兒劑量極低（遠小於背景劑量），落實 Teach-back 請病人回述理解。"
+      },
+      {
+        id: "C08",
+        category: "患肢照護防護",
+        isCritical: false,
+        title: "接觸感控、疼痛評估與非負重安全移位",
+        standard: "接觸前執行洗手感控；評估疼痛程度；固定輪椅煞車，以支托患肢、不讓患肢承重之安全方式完成移位與非負重擺位。"
+      },
+      {
+        id: "C09",
+        category: "暴露視診外物",
+        isCritical: true,
+        title: "★ 輕柔脫襪暴露視診並主動發現磁力貼",
+        standard: "說明需暴露區域並取得同意，輕柔脫襪並視診足背皮膚與末梢循環；在第三蹠骨投影區主動發現圓形含金屬磁力貼片。"
+      },
+      {
+        id: "C10",
+        category: "假影防範排除",
+        isCritical: true,
+        title: "★ 說明金屬假影遮蔽風險並安全移除",
+        standard: "詢問貼片性質，向病人清楚說明金屬遮蔽骨骼假影風險，在同意下輕柔安全移除收存；嚴禁粗暴按壓骨折處或強撕傷口敷料。"
+      },
+      {
+        id: "C11",
+        category: "攝影條件優化",
+        isCritical: false,
+        title: "非負重擺位、適當準直與放置右側標記",
+        standard: "採可耐受之非負重 AP/斜位/側位擺位；曝光前放置正確右側標記 (R Marker)；嚴格縮小準直僅涵蓋足部必要解剖構造避免重照。"
+      },
+      {
+        id: "C12",
+        category: "ISBAR結構通報",
+        isCritical: true,
+        title: "★ 完整 ISBAR 向急診醫師回報與確認正當性",
+        standard: "以 ISBAR 完整通報身分 (I)、新懷孕資訊停檢 (S)、工傷自驗陽性與保密要求 (B)、貼片已除/末梢良好/射束遠離子宮 (A)、建議維持攝影 (R)。"
+      },
+      {
+        id: "C13",
+        category: "閉環覆誦確認",
+        isCritical: true,
+        title: "★ 接受醫師醫囑後落實閉環覆誦",
+        standard: "接收醫師正當性確認指示後確實覆誦內容，並獲得發話醫師確認，落實閉環溝通 (Closed-Loop)，確保檢查安全。"
+      },
+      {
+        id: "C14",
+        category: "影像品質品管",
+        isCritical: false,
+        title: "攝影後落實影像品質、側別與遮蔽檢核",
+        standard: "模擬曝光後立即核對影像身分、右側標記、範圍清晰度，並確認無金屬貼片遮蔽骨折線（發放 Q0/Q1 卡時能正確判斷與處置）。"
+      },
+      {
+        id: "C15",
+        category: "仲介界線維持",
+        isCritical: true,
+        title: "★ 仲介催問時堅守界線，絕不透露懷孕資訊",
+        standard: "仲介敲門催問時維持專業界線，僅提供獲授權之流程資訊（檢查完成請回診間看報告），絕不在言語或文件上洩漏懷孕情事。"
+      },
+      {
+        id: "C16",
+        category: "跨團隊私密交班",
+        isCritical: false,
+        title: "私密交接懷孕評估與照護予急診接手醫護",
+        standard: "選擇私密管道向急診接手護理師或醫師面對面交班自述懷孕與保密偏好，確認後續超音波評估與足部照護接手，避免照護中斷。"
+      },
+      {
+        id: "C17",
+        category: "移工權益轉介",
+        isCritical: false,
+        title: "主動提出社工與 1955 諮詢支援並尊重意願",
+        standard: "向病人說明台灣懷孕移工工作權益保障，主動提出社工或勞動部 1955 諮詢專線支援，詢問並尊重病人接受或拒絕之意願。"
+      },
+      {
+        id: "C18",
+        category: "客觀病歷登錄",
+        isCritical: false,
+        title: "授權臨床系統客觀詳實紀錄敏感資訊",
+        standard: "在授權臨床病歷中詳載自述懷孕來源、外物安全處理、正當性通報、檢查完成與交接對象；不加在影像註字或交給仲介的紙張。"
+      }
+    ];
+
+    // State object
+    let simState = {
+      timerMode: 10, // 10 or 15 mins
+      timeRemaining: 10 * 60,
+      isRunning: false,
+      timerInterval: null,
+      scores: {}, // item.id -> "done" | "not_done" | "na"
+      notes: {},
+      redFlags: [false, false, false, false],
+      currentFilter: 'all'
+    };
+
+    // Web Audio Synthesizer (Zero external sound files, strictly compliant)
+    const AudioEngine = {
+      ctx: null,
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) this.ctx = new AudioContext();
+        }
+      },
+      playBeep(freq = 600, duration = 0.1, type = 'sine') {
+        try {
+          this.init();
+          if (!this.ctx) return;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch(e) {
+          console.warn("Audio unavailable", e);
+        }
+      },
+      playGong() {
+        this.playBeep(440, 0.4, 'triangle');
+        setTimeout(() => this.playBeep(880, 0.5, 'sine'), 100);
+      },
+      playAlert() {
+        this.playBeep(850, 0.12, 'sawtooth');
+        setTimeout(() => this.playBeep(650, 0.2, 'sawtooth'), 130);
+      }
+    };
+
+    // Initialize Checklist Data
+    function initChecklist() {
+      CHECKLIST_ITEMS.forEach(item => {
+        simState.scores[item.id] = null; // unselected
+        simState.notes[item.id] = "";
+      });
+      renderChecklistTable();
+      calculateScore();
+    }
+
+    // Render Checklist Table Rows
+    function renderChecklistTable() {
+      const tbody = document.getElementById('checklistBody');
+      tbody.innerHTML = '';
+
+      CHECKLIST_ITEMS.forEach((item) => {
+        const tr = document.createElement('tr');
+        tr.id = `row-${item.id}`;
+        tr.className = `hover:bg-slate-50/80 transition-colors border-b border-slate-100 ${item.isCritical ? 'bg-rose-50/20' : ''}`;
+
+        // Filtering visibility
+        const score = simState.scores[item.id];
+        if (simState.currentFilter === 'critical' && !item.isCritical) tr.classList.add('hidden');
+        if (simState.currentFilter === 'unscored' && score !== null) tr.classList.add('hidden');
+        if (simState.currentFilter === 'missed' && score !== 'not_done') tr.classList.add('hidden');
+
+        tr.innerHTML = `
+          <td class="py-3 px-3 text-center align-top">
+            <span class="inline-block px-1.5 py-0.5 rounded ${item.isCritical ? 'bg-rose-100 text-rose-800 border border-rose-300 font-black' : 'bg-slate-100 text-slate-700 font-mono'} text-xs">${item.id}</span>
+          </td>
+          <td class="py-3 px-4 align-top">
+            <div class="flex items-center gap-2">
+              <span class="font-bold ${item.isCritical ? 'text-rose-950 font-black' : 'text-slate-900'} text-xs sm:text-sm">${item.title}</span>
+              <span class="text-[10px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 font-medium">${item.category}</span>
+            </div>
+            <p class="text-xs text-slate-600 mt-1 leading-relaxed">${item.standard}</p>
+          </td>
+          <td class="py-3 px-3 text-center align-top whitespace-nowrap">
+            <div class="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-0.5 text-xs">
+              <button type="button" onclick="setScore('${item.id}', 'done')" class="score-btn px-2.5 py-1.5 rounded-md font-medium transition-all ${score === 'done' ? 'bg-emerald-600 text-white shadow-sm font-bold' : 'text-slate-600 hover:text-emerald-700'}">
+                做到
+              </button>
+              <button type="button" onclick="setScore('${item.id}', 'not_done')" class="score-btn px-2.5 py-1.5 rounded-md font-medium transition-all ${score === 'not_done' ? 'bg-rose-600 text-white shadow-sm font-bold' : 'text-slate-600 hover:text-rose-700'}">
+                未做到
+              </button>
+              <button type="button" onclick="setScore('${item.id}', 'na')" class="score-btn px-2 py-1.5 rounded-md font-medium transition-all ${score === 'na' ? 'bg-slate-600 text-white shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800'}" title="非學員疏漏，本次未提供合理機會">
+                N/A
+              </button>
+            </div>
+          </td>
+          <td class="py-3 px-3 align-top">
+            <div class="flex items-center gap-1.5">
+              <button type="button" onclick="stampCurrentTime('${item.id}')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-[11px] font-mono shrink-0 transition-colors" title="插入當前演練時間">
+                ⏱️ 戳記
+              </button>
+              <input type="text" id="note-${item.id}" value="${simState.notes[item.id] || ''}" onchange="saveItemNote('${item.id}', this.value)" placeholder="記錄觀察事證或秒數..." class="w-full text-xs p-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-brand-500">
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Set score for an item
+    function setScore(id, val) {
+      AudioEngine.playBeep(val === 'done' ? 700 : 350, 0.08);
+      simState.scores[id] = val;
+      renderChecklistTable();
+      calculateScore();
+      updateReportPreview();
+    }
+
+    // Save note for item
+    function saveItemNote(id, noteVal) {
+      simState.notes[id] = noteVal;
+      updateReportPreview();
+    }
+
+    // Auto timestamp from simulation clock
+    function stampCurrentTime(id) {
+      const display = document.getElementById('timerDisplay').innerText;
+      const input = document.getElementById(`note-${id}`);
+      if (input) {
+        const current = input.value;
+        input.value = current ? `${current} [${display}]` : `[${display}] `;
+        simState.notes[id] = input.value;
+        showToast(`已插入時間戳記 ${display}`);
+        updateReportPreview();
+      }
+    }
+
+    // Calculate score
+    function calculateScore() {
+      let done = 0;
+      let notDone = 0;
+      let na = 0;
+      let unscored = 0;
+
+      CHECKLIST_ITEMS.forEach(item => {
+        const val = simState.scores[item.id];
+        if (val === 'done') done++;
+        else if (val === 'not_done') notDone++;
+        else if (val === 'na') na++;
+        else unscored++;
+      });
+
+      const applicable = CHECKLIST_ITEMS.length - na;
+      const score = applicable > 0 ? (done / applicable) * 100 : 0;
+      const rounded = score.toFixed(1);
+
+      // DOM Updates
+      document.getElementById('totalScoreText').innerText = rounded;
+      document.getElementById('scoreBadgeNav').innerText = `${rounded}分`;
+      document.getElementById('doneCountText').innerText = done;
+      document.getElementById('appliedCountText').innerText = applicable;
+      document.getElementById('naCountText').innerText = `${na}項N/A`;
+      document.getElementById('unscoredCount').innerText = unscored;
+
+      // Update Gauge
+      const fillPercent = applicable > 0 ? Math.round((done / applicable) * 100) : 0;
+      document.getElementById('gaugePercent').innerText = `${fillPercent}%`;
+      document.getElementById('gaugeFill').style.height = `${fillPercent}%`;
+
+      if (fillPercent >= 80) {
+        document.getElementById('gaugeRing').className = "w-16 h-16 rounded-full border-4 border-emerald-400 flex items-center justify-center relative overflow-hidden";
+      } else if (fillPercent >= 60) {
+        document.getElementById('gaugeRing').className = "w-16 h-16 rounded-full border-4 border-amber-400 flex items-center justify-center relative overflow-hidden";
+      } else {
+        document.getElementById('gaugeRing').className = "w-16 h-16 rounded-full border-4 border-slate-200 flex items-center justify-center relative overflow-hidden";
+      }
+
+      updateReportPreview();
+    }
+
+    // Filter checklist
+    function filterChecklist(filter) {
+      simState.currentFilter = filter;
+      document.querySelectorAll('[id^="filter-"]').forEach(btn => {
+        btn.className = "px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 font-medium";
+      });
+      document.getElementById(`filter-${filter}`).className = "px-2.5 py-1 rounded-md bg-brand-600 text-white font-medium";
+      renderChecklistTable();
+    }
+
+    // Quick Fill All
+    function quickFillAll(done = true) {
+      CHECKLIST_ITEMS.forEach(item => {
+        simState.scores[item.id] = done ? 'done' : null;
+      });
+      renderChecklistTable();
+      calculateScore();
+      showToast(done ? "已快速將全部項目設為做到" : "已重置評核勾選");
+    }
+
+    // Reset Evaluation
+    function resetEvaluation() {
+      CHECKLIST_ITEMS.forEach(item => {
+        simState.scores[item.id] = null;
+        simState.notes[item.id] = "";
+      });
+      document.getElementById('rf1').checked = false;
+      document.getElementById('rf2').checked = false;
+      document.getElementById('rf3').checked = false;
+      document.getElementById('rf4').checked = false;
+      updateRedFlags();
+      renderChecklistTable();
+      calculateScore();
+      showToast("已清空評核數據");
+    }
+
+    // Red Flags Update
+    function updateRedFlags() {
+      const r1 = document.getElementById('rf1').checked;
+      const r2 = document.getElementById('rf2').checked;
+      const r3 = document.getElementById('rf3').checked;
+      const r4 = document.getElementById('rf4').checked;
+      simState.redFlags = [r1, r2, r3, r4];
+
+      const triggered = r1 || r2 || r3 || r4;
+      const badge = document.getElementById('redFlagBadge');
+      if (triggered) {
+        AudioEngine.playAlert();
+        badge.className = "px-2 py-0.5 rounded bg-rose-600 text-white font-bold animate-pulse";
+        badge.innerText = "已觸發重練紅線！";
+        showToast("⚠️ 觸發重大安全重練指標，需於復盤重點處置！");
+      } else {
+        badge.className = "px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold";
+        badge.innerText = "目前無觸發";
+      }
+      updateReportPreview();
+    }
+
+    // Timer System
+    function setTimerMode(mins) {
+      if (simState.isRunning) {
+        clearInterval(simState.timerInterval);
+        simState.isRunning = false;
+        document.getElementById('startTimerText').innerText = "開始";
+      }
+      simState.timerMode = mins;
+      simState.timeRemaining = mins * 60;
+      updateTimerDisplay();
+
+      document.getElementById('mode10Btn').className = mins === 10 ? 
+        "px-2.5 py-1 rounded-md bg-white text-brand-700 shadow-sm transition-all" : 
+        "px-2.5 py-1 rounded-md text-slate-600 hover:text-slate-900 transition-all";
+      document.getElementById('mode15Btn').className = mins === 15 ? 
+        "px-2.5 py-1 rounded-md bg-white text-brand-700 shadow-sm transition-all" : 
+        "px-2.5 py-1 rounded-md text-slate-600 hover:text-slate-900 transition-all";
+
+      showToast(`已切換為 ${mins} 分鐘演練模式`);
+    }
+
+    function toggleTimer() {
+      AudioEngine.init();
+      if (simState.isRunning) {
+        // Pause
+        clearInterval(simState.timerInterval);
+        simState.isRunning = false;
+        document.getElementById('startTimerText').innerText = "繼續";
+        document.getElementById('playIcon').innerHTML = '<path d="M8 5v14l11-7z"/>';
+        showToast("演練計時已暫停");
+      } else {
+        // Start
+        simState.isRunning = true;
+        document.getElementById('startTimerText').innerText = "暫停";
+        document.getElementById('playIcon').innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+        AudioEngine.playBeep(880, 0.15);
+        showToast("演練開始！");
+
+        simState.timerInterval = setInterval(() => {
+          if (simState.timeRemaining > 0) {
+            simState.timeRemaining--;
+            updateTimerDisplay();
+
+            // Milestones chime
+            if (simState.timeRemaining === 120) { // 2 mins left
+              AudioEngine.playAlert();
+              showToast("⏰ 提醒：演練剩餘最後 2 分鐘！");
+            }
+          } else {
+            clearInterval(simState.timerInterval);
+            simState.isRunning = false;
+            document.getElementById('startTimerText').innerText = "完成";
+            AudioEngine.playGong();
+            openModal("演練時間到", `
+              <div class="text-center py-3">
+                <span class="text-3xl">🔔</span>
+                <h4 class="font-bold text-slate-900 mt-2 text-base">時間截止！</h4>
+                <p class="text-slate-600 mt-1">演練情境時間已結束，請考官引導團隊進行 3 分鐘任務後匯報與 5 分鐘 PEARLS 復盤。</p>
+              </div>
+            `);
+          }
+        }, 1000);
+      }
+    }
+
+    function resetTimer() {
+      clearInterval(simState.timerInterval);
+      simState.isRunning = false;
+      simState.timeRemaining = simState.timerMode * 60;
+      updateTimerDisplay();
+      document.getElementById('startTimerText').innerText = "開始";
+      document.getElementById('playIcon').innerHTML = '<path d="M8 5v14l11-7z"/>';
+      showToast("計時已重置");
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(simState.timeRemaining / 60);
+      const secs = simState.timeRemaining % 60;
+      const formatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      const elem = document.getElementById('timerDisplay');
+      elem.innerText = formatted;
+
+      if (simState.timeRemaining <= 60 && simState.timeRemaining > 0) {
+        elem.className = "flex items-center gap-1.5 font-mono text-xl sm:text-2xl font-bold px-2 py-0.5 rounded-lg bg-rose-900 text-rose-300 min-w-[105px] justify-center tracking-wider animate-pulse shadow-inner";
+      } else {
+        elem.className = "flex items-center gap-1.5 font-mono text-xl sm:text-2xl font-bold px-2 py-0.5 rounded-lg bg-slate-900 text-emerald-400 min-w-[105px] justify-center tracking-wider shadow-inner";
+      }
+    }
+
+    function triggerEmergencyHalt() {
+      AudioEngine.playAlert();
+      if (simState.isRunning) toggleTimer();
+      openModal("🚨 演練緊急停止 (Emergency Stop)", `
+        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-rose-900">
+          <p class="font-bold text-sm">口令已下達：「停止演練」！</p>
+          <p class="mt-1 leading-relaxed">
+            現場偵測到真實人身不適、粗暴搬動患肢或強行危險操作。請全體人員立即停下手邊動作，維持病人安全，由主審考官介入評估後續。
+          </p>
+        </div>
+      `);
+    }
+
+    // Clinical Feedback Modals
+    function openVitalsModal() {
+      openModal("📊 病人 Siti 基線生理徵象卡", `
+        <div class="space-y-3 font-mono">
+          <div class="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs">
+            <div><strong>心跳 (HR):</strong> 102 次/分</div>
+            <div><strong>血壓 (BP):</strong> 118/72 mmHg</div>
+            <div><strong>呼吸 (RR):</strong> 20 次/分</div>
+            <div><strong>血氧 (SpO₂):</strong> 99% (室內空氣)</div>
+            <div><strong>體溫 (T):</strong> 36.7 °C</div>
+            <div><strong>疼痛評估:</strong> 7 / 10 (右足劇痛)</div>
+          </div>
+          <div class="bg-sky-50 p-3 rounded-xl border border-sky-200 text-sky-950 text-xs">
+            <strong class="font-sans block text-sky-900 mb-1">患肢外觀與末梢循環評估：</strong>
+            <p>• <strong>右足背外觀：</strong>局部腫脹瘀青，無皮膚破損傷口。</p>
+            <p>• <strong>末梢灌流：</strong>足趾溫暖，微血管回填時間 (CRT) &lt; 2 秒。</p>
+            <p class="text-[11px] text-sky-700 mt-1 font-sans">（支托安撫後心率降至 94、疼痛降至 5/10；若不當強迫擺位或按壓，疼痛驟升至 9/10）</p>
+          </div>
+        </div>
+      `);
+    }
+
+    function openQCardModal() {
+      openModal("📷 模擬影像回饋卡 (Director Image Feedback)", `
+        <div class="space-y-3 text-xs">
+          <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-xl space-y-1">
+            <strong class="text-emerald-900 block font-bold text-sm">【Q0 卡：已安全排除金屬貼片】</strong>
+            <p class="text-slate-700">「影像身分與右側標記 (R) 相符，範圍完整涵蓋右足必要骨骼結構，無外物遮蔽，曝光及清晰度良好可供判讀；見第三蹠骨疑骨折線待醫師判讀。」</p>
+          </div>
+          <div class="bg-rose-50 border border-rose-200 p-3 rounded-xl space-y-1">
+            <strong class="text-rose-900 block font-bold text-sm">【Q1 卡：未移除貼片即曝光】</strong>
+            <p class="text-slate-700">「右足背第三蹠骨投影區見明顯圓形金屬高密度陰影，完全遮蔽骨折線結構，無法判讀診斷。學員須自行發現問題並向醫師通報補救，不得機械性全套重照。」</p>
+          </div>
+          <div class="bg-slate-100 p-2.5 rounded-lg text-slate-600 text-[11px]">
+            <strong>評核註記：</strong>本卡評核學員對身分標記、假影發現與影像品質之檢核行為，非考核影像診斷能力。
+          </div>
+        </div>
+      `);
+    }
+
+    function triggerChallengeModal() {
+      AudioEngine.playAlert();
+      openModal("⚡ 資深同仁施壓情境 (TeamSTEPPS Two-Challenge Rule)", `
+        <div class="bg-amber-50 border border-amber-200 p-3.5 rounded-xl text-amber-950 space-y-2">
+          <span class="px-2 py-0.5 rounded bg-amber-600 text-white font-bold text-[10px]">考官介入扮演資深人員</span>
+          <p class="font-bold text-sm">「通譯先不用叫啦，仲介簽一簽快照一照就好，後面還有很多病人在等！」</p>
+          <div class="bg-white/90 p-2.5 rounded border border-amber-200 text-slate-800 space-y-1.5 text-xs">
+            <strong>學員預期應對重點 (CUS & Two-Challenge)：</strong>
+            <p>1. <strong>第一次挑戰：</strong>明確表達擔憂「學長，病人神情很害怕，未確認理解就照射涉及病人安全與同意，請先讓我接通通譯。」</p>
+            <p>2. <strong>第二次挑戰：</strong>若遭駁回，再次清楚主張「這涉及醫療常規與隱私安全，請先暫停曝光，等待通譯確認。」</p>
+          </div>
+        </div>
+      `);
+    }
+
+    // Report & Summary Synchronization
+    function updateReportPreview() {
+      const dateVal = document.getElementById('evalDate')?.value || '2026-09-29';
+      const teamAVal = document.getElementById('evalTeamA')?.value || '未填寫';
+      const teamBVal = document.getElementById('evalTeamB')?.value || '未填寫';
+      const judgeVal = document.getElementById('evalJudge')?.value || '未填寫';
+      const scoreVal = document.getElementById('totalScoreText')?.innerText || '0.0';
+      const doneVal = document.getElementById('doneCountText')?.innerText || '0';
+      const appliedVal = document.getElementById('appliedCountText')?.innerText || '18';
+
+      document.getElementById('repDate').innerText = dateVal;
+      document.getElementById('repTeamA').innerText = teamAVal;
+      document.getElementById('repTeamB').innerText = teamBVal;
+      document.getElementById('repJudge').innerText = judgeVal;
+      document.getElementById('repScore').innerText = `${scoreVal} 分`;
+      document.getElementById('repItems').innerText = `${doneVal} / ${appliedVal} 項`;
+
+      // Red flags check
+      const rTriggered = simState.redFlags.some(Boolean);
+      const rfEl = document.getElementById('repRedFlags');
+      if (rTriggered) {
+        rfEl.innerText = "⚠️ 觸發紅線指標！";
+        rfEl.className = "text-sm font-bold text-rose-600";
+      } else {
+        rfEl.innerText = "✓ 無觸發";
+        rfEl.className = "text-sm font-bold text-emerald-600";
+      }
+
+      // Status
+      const statusEl = document.getElementById('repStatus');
+      const concSelect = document.getElementById('evalConclusion');
+      statusEl.innerText = concSelect ? concSelect.options[concSelect.selectedIndex].text : "評核中";
+
+      // Missed items list
+      const missedUl = document.getElementById('repMissedList');
+      missedUl.innerHTML = '';
+      const missed = CHECKLIST_ITEMS.filter(it => simState.scores[it.id] === 'not_done');
+      if (missed.length === 0) {
+        missedUl.innerHTML = '<li class="text-emerald-700">無未做到項目（全部達成或尚未評核）</li>';
+      } else {
+        missed.forEach(m => {
+          const li = document.createElement('li');
+          const noteText = simState.notes[m.id] ? ` — 備註: ${simState.notes[m.id]}` : '';
+          li.innerHTML = `<strong class="text-rose-700">${m.id} ${m.title}</strong>${noteText}`;
+          missedUl.appendChild(li);
+        });
+      }
+
+      // Feedback mirror
+      const fEff = document.getElementById('feedbackEffective')?.value;
+      const fGap = document.getElementById('feedbackGap')?.value;
+      const aNext = document.getElementById('actionNext')?.value;
+      const aRole = document.getElementById('actionRole')?.value;
+
+      document.getElementById('repGood').innerText = fEff || "放射師 A 能主動辨認語言障礙並啟動通譯，在私密環境下耐心取得懷孕自述；放射師 B 輕柔脫襪並在第三蹠骨發現磁力貼並安全移除。";
+      document.getElementById('repNeedWork').innerText = fGap || "尚無特別登錄落差。";
+      document.getElementById('repActionContent').innerText = aNext || "落實請仲介至等候區稍坐並嚴格保密懷孕情事";
+      document.getElementById('repActionRole').innerText = aRole || "放射師 A & B 團隊";
+    }
+
+    // Copy formatted report text
+    function copyFullReportText() {
+      const dateVal = document.getElementById('evalDate')?.value || '2026-09-29';
+      const teamAVal = document.getElementById('evalTeamA')?.value || '學員A';
+      const teamBVal = document.getElementById('evalTeamB')?.value || '學員B';
+      const judgeVal = document.getElementById('evalJudge')?.value || '主審';
+      const scoreVal = document.getElementById('totalScoreText')?.innerText || '0.0';
+      const doneVal = document.getElementById('doneCountText')?.innerText || '0';
+      const appliedVal = document.getElementById('appliedCountText')?.innerText || '18';
+      const missed = CHECKLIST_ITEMS.filter(it => simState.scores[it.id] === 'not_done')
+        .map(m => `  • [${m.id}] ${m.title} (${simState.notes[m.id] || '未達成'})`).join('\n');
+
+      const reportText = `【急診移工足部外傷演練評核表 (XR PRIV 01)】\n` +
+        `演練日期：${dateVal} | 放射師 A：${teamAVal} | 放射師 B：${teamBVal} | 考官：${judgeVal}\n` +
+        `評核結果：總得分 ${scoreVal} 分 (做到 ${doneVal}/${appliedVal} 項)\n` +
+        `重大紅線：${simState.redFlags.some(Boolean) ? '⚠️ 已觸發安全重練紅線' : '無觸發'}\n\n` +
+        `[未做到落差項目]\n${missed || '  無未做到項目'}\n\n` +
+        `[考官回饋]\n` +
+        `有效行為：${document.getElementById('feedbackEffective')?.value || '無'}\n` +
+        `改善行動：由 ${document.getElementById('actionRole')?.value || '負責人'} 執行 ${document.getElementById('actionNext')?.value || '具體改善措施'}\n` +
+        `依據規範：IAEA Radiation Protection of Pregnant Women / 醫療法第 72 條 / TeamSTEPPS`;
+
+      copyToClipboard(reportText, "評核報告文字已複製到剪貼簿！");
+    }
+
+    // Copy ISBAR Script
+    function copyISBARScript() {
+      const text = `【ISBAR 通報急診醫師示範台詞】\n` +
+        `I (身分)：醫師您好，我是急診 X 光室放射師 A。病人 Siti、SIM0001。\n` +
+        `S (現況)：排右足外傷攝影，發現懷孕資訊與單據不符，目前尚未曝光。\n` +
+        `B (背景)：工傷右足痛，單據原填 No 由仲介代勾；私下自述停經 8 週驗孕陽性，要求對仲介保密。\n` +
+        `A (評估)：足部遠離骨盆，胎兒劑量極低；足背金屬貼片已移除，病人理解同意非負重攝影。\n` +
+        `R (建議)：建議依醫囑完成非負重攝影並優化準直；後續由急診安排超音波與社工支援。\n` +
+        `閉環覆誦：收到，依正當性核可執行右足非負重攝影三視圖，嚴格準直避免重照，後續向急診主護私密交接懷孕評估。`;
+      copyToClipboard(text, "ISBAR 示範台詞已複製到剪貼簿！");
+    }
+
+    // Clipboard helper conforming to iframe security
+    function copyToClipboard(text, successMsg) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        const successful = document.execCommand('copy');
+        if (successful) showToast(successMsg);
+        else showToast("複製失敗，請手動選取複製");
+      } catch (err) {
+        showToast("環境限制無法自動複製");
+      }
+      document.body.removeChild(textarea);
+    }
+
+    // Tab switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('border-brand-600', 'text-brand-600', 'font-semibold');
+        btn.classList.add('border-transparent', 'text-slate-500');
+      });
+
+      const targetView = document.getElementById(`view-${tabId}`);
+      const targetBtn = document.getElementById(`tab-${tabId}`);
+      if (targetView && targetBtn) {
+        targetView.classList.remove('hidden');
+        targetBtn.classList.remove('border-transparent', 'text-slate-500');
+        targetBtn.classList.add('border-brand-600', 'text-brand-600', 'font-semibold');
+      }
+
+      if (tabId === 'debriefing') updateReportPreview();
+    }
+
+    // Modal Control
+    function openModal(title, htmlContent) {
+      document.getElementById('modalTitle').innerText = title;
+      document.getElementById('modalBody').innerHTML = htmlContent;
+      const modal = document.getElementById('appModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('appModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // Toast Control
+    let toastTimeout = null;
+    function showToast(msg, icon = 'ℹ️') {
+      const toast = document.getElementById('appToast');
+      document.getElementById('toastMsg').innerText = msg;
+      document.getElementById('toastIcon').innerText = icon;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 2500);
+    }
+
+    // Window Load Initialization (Default view to Scenario Timeline)
+    window.addEventListener('load', () => {
+      initChecklist();
+      updateTimerDisplay();
+      switchTab('scenario'); // Default to Timeline View
+
+      // Mirror inputs to report live
+      ['evalDate', 'evalTeamA', 'evalTeamB', 'evalJudge', 'feedbackEffective', 'feedbackGap', 'actionNext', 'actionRole', 'evalConclusion'].forEach(id => {
+        const elem = document.getElementById(id);
+        if (elem) elem.addEventListener('input', updateReportPreview);
+      });
+    });
+  </script>
+</body>
+</html>
